@@ -1,11 +1,12 @@
 if (Meteor.isClient) {
-  // counter starts at 0
-  Session.setDefault('counter', 0);
 
-  Template.hello.helpers({
-    counter: function () {
-      return Session.get('counter');
-    }
+  Template.body.helpers({
+    tasks: [
+      { text : "This is task 1"},
+      { text : "This is task 2"},
+      { text : "This is task 3"}
+    ]
+
   });
 
   Template.hello.events({
