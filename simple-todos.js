@@ -3,11 +3,22 @@ Tasks = new Mongo.Collection("tasks");
 if (Meteor.isClient) {
 
   Template.body.helpers({
-    tasks: function(){
-      //按插入顺序逆序
-      return Tasks.find({}, {sort: {createAt : -1}});
+   tasks: function () {
+    if (Session.get("hideCompleted")) {
+      // If hide completed is checked, filter tasks
+      return Tasks.find({checked: {$ne: true}}, {sort: {createdAt: -1}});
+    } else {
+      // Otherwise, return all of the tasks
+      return Tasks.find({}, {sort: {createdAt: -1}});
     }
-
+  },
+  hideCompleted: function () {
+    return Session.get("hideCompleted");
+  },
+  // Add to Template.body.helpers
+  incompleteCount: function () {
+    return Tasks.find({checked: {$ne: true}}).count();
+  }  
  });
 
   Template.body.events({
@@ -25,6 +36,11 @@ if (Meteor.isClient) {
       //告诉浏览器不需要使用默认的submit处理（会刷新），因为我们已经处理过了这个消息
       //如果取消这一行，浏览器会有一个刷新过程
       return false;
+    },
+
+    // Add to Template.body.events
+    "change .hide-completed input": function (event) {
+      Session.set("hideCompleted", event.target.checked);
     }
 
   }
